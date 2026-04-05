@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>sam</title>
+<title>sam ✦</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
@@ -305,11 +305,12 @@ document.addEventListener('mousemove',e=>{
 });
 
 /* SOUND */
-let muted=true;
+let muted=false;
 const vid=document.getElementById('videobg');
 function toggleSound(){
   muted=!muted;
   vid.muted=muted;
+  vid.volume=0.4;
   document.getElementById('icon-muted').style.display=muted?'block':'none';
   document.getElementById('icon-unmuted').style.display=muted?'none':'block';
 }
@@ -328,6 +329,25 @@ function setStatus(s){
   badge.style.color=S_TCOL[s]||S_TCOL.offline;
 }
 
+function setFavicon(url){
+  const canvas=document.createElement('canvas');
+  canvas.width=64;canvas.height=64;
+  const ctx=canvas.getContext('2d');
+  const image=new Image();
+  image.crossOrigin='anonymous';
+  image.onload=()=>{
+    ctx.beginPath();
+    ctx.arc(32,32,32,0,Math.PI*2);
+    ctx.clip();
+    ctx.drawImage(image,0,0,64,64);
+    const link=document.getElementById('favicon')||document.createElement('link');
+    link.id='favicon';link.rel='icon';link.type='image/png';
+    link.href=canvas.toDataURL('image/png');
+    document.head.appendChild(link);
+  };
+  image.src=url;
+}
+
 function setAvatarEverywhere(url){
   ['av-img','loader-av','pill-av'].forEach((id,i)=>{
     const img=document.getElementById(id);
@@ -335,6 +355,7 @@ function setAvatarEverywhere(url){
     img.src=url;
     img.onload=()=>{ img.style.display='block'; if(fb) fb.style.display='none'; };
   });
+  setFavicon(url);
 }
 
 function applyPresence(data){
@@ -388,9 +409,9 @@ function updateActivity(data){
 
 /* SPLASH → LOADER → MAIN */
 function enterSplash(){
-  // unmute video on first user interaction (browser allows this)
   vid.muted=false;
   vid.volume=0.4;
+  vid.play();
   muted=false;
   document.getElementById('icon-muted').style.display='none';
   document.getElementById('icon-unmuted').style.display='block';
