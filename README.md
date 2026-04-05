@@ -258,4 +258,4 @@ Enable Developer Mode in Discord settings (Settings → Advanced → Developer M
 
 ## 📄 License
 
-Personal use. Feel free to fork and customise for your own bio site.
+Personal use. Feel free to fork and customise for your own bio site or you can contact me to customize it for you.
