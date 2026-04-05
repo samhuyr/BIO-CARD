@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/api/presence", "destination": "/api/presence.js" }
+  ]
+}
