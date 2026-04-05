@@ -388,6 +388,12 @@ function updateActivity(data){
 
 /* SPLASH → LOADER → MAIN */
 function enterSplash(){
+  // unmute video on first user interaction (browser allows this)
+  vid.muted=false;
+  vid.volume=0.4;
+  muted=false;
+  document.getElementById('icon-muted').style.display='none';
+  document.getElementById('icon-unmuted').style.display='block';
   document.getElementById('splash').classList.add('out');
   setTimeout(showLoader,800);
 }
