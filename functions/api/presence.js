@@ -19,9 +19,15 @@ export async function onRequest(context) {
     const user = await userRes.json();
     const lanyard = await lanyardRes.json();
 
+    // try discord API first, fall back to lanyard's discord_user
+    const decorationAsset =
+      user.avatar_decoration_data?.asset ||
+      lanyard?.data?.discord_user?.avatar_decoration_data?.asset ||
+      null;
+
     let decorationUrl = null;
-    if (user.avatar_decoration_data?.asset) {
-      decorationUrl = `https://cdn.discordapp.com/avatar-decoration-presets/${user.avatar_decoration_data.asset}.png?size=256&passthrough=true`;
+    if (decorationAsset) {
+      decorationUrl = `https://cdn.discordapp.com/avatar-decoration-presets/${decorationAsset}.png?size=256&passthrough=true`;
     }
 
     return new Response(JSON.stringify({ ...lanyard, decoration: decorationUrl }), {
