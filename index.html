@@ -110,35 +110,57 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
 #splash.ready .spl-sub{opacity:1;}
 
 /* ═══════════════════════════════
-   SCREEN 2 — INTRO VIDEO
+   SCREEN 2 — INTRO GIF
 ═══════════════════════════════ */
 #intro-screen{
   position:fixed;inset:0;z-index:45;
   background:#000;
   display:none;opacity:0;
   transition:opacity .8s ease;
+  overflow:hidden;
 }
 #intro-screen.show{display:block;}
 #intro-screen.fade-in{opacity:1;}
 #intro-screen.fade-out{opacity:0;pointer-events:none;}
 
-#intro-vid{
-  width:100%;height:100%;object-fit:cover;
+#intro-gif{
+  width:100%;height:100%;
+  object-fit:cover;
   display:block;
+  filter:contrast(1.1) saturate(1.15);
 }
-/* skip hint */
+/* red scanline overlay to match the aesthetic */
+#intro-screen::before{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.08) 0px,rgba(0,0,0,0.08) 1px,transparent 1px,transparent 3px);
+}
+/* red vignette matching gif colors */
+#intro-screen::after{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(20,0,0,0.75) 100%);
+}
 .intro-skip{
-  position:absolute;bottom:28px;right:28px;
+  position:absolute;bottom:28px;right:28px;z-index:10;
   font-size:9px;font-weight:300;letter-spacing:4px;
-  color:rgba(255,255,255,0.3);text-transform:uppercase;
+  color:rgba(255,255,255,0.35);text-transform:uppercase;
   cursor:pointer!important;
-  transition:color .2s;
-  border:1px solid rgba(255,255,255,0.12);
-  padding:7px 14px;border-radius:20px;
+  transition:color .2s,border-color .2s;
+  border:1px solid rgba(255,80,80,0.2);
+  padding:7px 16px;border-radius:20px;
   backdrop-filter:blur(8px);
-  background:rgba(0,0,0,0.3);
+  background:rgba(0,0,0,0.4);
 }
-.intro-skip:hover{color:rgba(255,255,255,0.8);}
+.intro-skip:hover{color:rgba(255,100,100,0.9);border-color:rgba(255,80,80,0.5);}
+/* duration bar at bottom */
+.intro-bar-wrap{
+  position:absolute;bottom:0;left:0;right:0;z-index:10;
+  height:2px;background:rgba(255,255,255,0.06);
+}
+.intro-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,rgba(200,30,30,0.8),rgba(255,80,50,0.9));
+  transition:width linear;
+}
 
 /* ═══════════════════════════════
    SCREEN 3 — IDENTITY REVEAL
@@ -254,6 +276,49 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
 #loader.fade-in .rv-continue{opacity:1;}
 @keyframes rvBreath{0%,100%{opacity:.1}50%{opacity:.4}}
 
+/* reveal avatar */
+.rv-av-wrap{
+  position:relative;width:80px;height:80px;
+  margin-bottom:22px;
+  opacity:0;transform:scale(0.85);
+  transition:opacity .7s ease .05s,transform .7s cubic-bezier(.34,1.4,.64,1) .05s;
+}
+#loader.fade-in .rv-av-wrap{opacity:1;transform:scale(1);}
+.rv-av-ring{
+  position:absolute;inset:-3px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(160,120,255,0.8),rgba(80,120,255,0.3),rgba(160,120,255,0.8));
+  animation:spinRing 3s linear infinite;
+}
+.rv-av-ring::after{content:'';position:absolute;inset:3px;border-radius:50%;background:#000;}
+@keyframes spinRing{to{transform:rotate(360deg)}}
+.rv-av-img{
+  width:80px;height:80px;border-radius:50%;
+  object-fit:cover;position:relative;z-index:1;display:block;
+}
+.rv-av-fb{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,#1a2a5a,#3a5aaa);
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;font-weight:700;color:#fff;
+  position:relative;z-index:1;
+}
+
+/* reveal progress bar */
+.rv-bar-wrap{
+  width:140px;height:1px;
+  background:rgba(255,255,255,0.08);
+  border-radius:1px;overflow:hidden;
+  margin-bottom:16px;
+  opacity:0;transition:opacity .5s ease 1s;
+}
+#loader.fade-in .rv-bar-wrap{opacity:1;}
+.rv-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,rgba(160,120,255,0.6),rgba(255,255,255,0.9));
+  transition:width 2.4s cubic-bezier(.4,0,.2,1);
+}
+.rv-bar.go{width:100%;}
+
 /* ═══════════════════════════════
    SCREEN 4 — MAIN BIO
 ═══════════════════════════════ */
@@ -356,7 +421,7 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
 </head>
 <body>
 
-<video id="videobg" autoplay muted loop playsinline>
+<video id="videobg" muted loop playsinline>
   <source src="bg.mp4" type="video/mp4"/>
 </video>
 <div id="vignette"></div>
@@ -387,11 +452,10 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
   <div class="spl-sub">experience awaits</div>
 </div>
 
-<!-- ── SCREEN 2: INTRO VIDEO ── -->
+<!-- ── SCREEN 2: INTRO GIF ── -->
 <div id="intro-screen">
-  <video id="intro-vid" playsinline>
-    <source src="intro.mp4" type="video/mp4"/>
-  </video>
+  <img id="intro-gif" src="intro.gif" alt=""/>
+  <div class="intro-bar-wrap"><div class="intro-bar" id="intro-bar"></div></div>
   <div class="intro-skip" onclick="skipIntro()">skip ›</div>
 </div>
 
@@ -402,6 +466,11 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
   <div class="rv-line rv-line1"></div>
   <div class="rv-line rv-line2"></div>
   <div class="rv-inner">
+    <div class="rv-av-wrap">
+      <div class="rv-av-ring"></div>
+      <img class="rv-av-img" id="loader-av" alt="" style="display:none"/>
+      <div class="rv-av-fb" id="loader-fb">S</div>
+    </div>
     <div class="rv-eyebrow">you just found</div>
     <div class="rv-name" id="rv-name">
       <span class="rv-name-char">S</span><span class="rv-name-char">a</span><span class="rv-name-char">m</span>
@@ -412,6 +481,7 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
       <div class="rv-divider-line"></div>
     </div>
     <div class="rv-tagline">don't search me up.</div>
+    <div class="rv-bar-wrap"><div class="rv-bar" id="rv-bar"></div></div>
     <div class="rv-continue">entering in a moment</div>
   </div>
 </div>
@@ -512,9 +582,12 @@ function setFavicon(url){
 }
 
 function setAvatarEverywhere(url){
-  ['av-img','loader-av','dc-av'].forEach((id,i)=>{
-    const img=document.getElementById(id);
-    const fb=document.getElementById(['av-fb','loader-fb','dc-av-fb'][i]);
+  // [imgId, fallbackId]
+  const pairs=[['av-img','av-fb'],['loader-av','loader-fb'],['dc-av','dc-av-fb']];
+  pairs.forEach(([imgId,fbId])=>{
+    const img=document.getElementById(imgId);
+    const fb=document.getElementById(fbId);
+    if(!img)return;
     img.src=url;
     img.onload=()=>{img.style.display='block';if(fb)fb.style.display='none';};
   });
@@ -568,39 +641,72 @@ function enterSplash(){
   if(el.requestFullscreen)el.requestFullscreen();
   else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
 
-  // unlock bg video sound
-  vid.muted=false;vid.volume=0.35;vid.play();
-  document.getElementById('sound-btn').classList.add('show');
+  // just hide splash, go to intro — NO bg video yet
   document.getElementById('splash').classList.add('out');
   setTimeout(showIntro,900);
 }
 
-/* ── STEP 2: INTRO VIDEO ── */
+/* ── STEP 2: INTRO GIF + DARK SOUND ── */
 function showIntro(){
   const screen=document.getElementById('intro-screen');
-  const introVid=document.getElementById('intro-vid');
   screen.classList.add('show');
   requestAnimationFrame(()=>requestAnimationFrame(()=>screen.classList.add('fade-in')));
 
-  // mute bg, play intro at full volume
-  vid.volume=0;
-  introVid.volume=1;
-  introVid.play();
+  playIntroSound();
 
-  introVid.onended=()=>finishIntro();
+  const DURATION=5000;
+  const bar=document.getElementById('intro-bar');
+  bar.style.transition=`width ${DURATION}ms linear`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ bar.style.width='100%'; }));
+
+  const autoSkip=setTimeout(()=>finishIntro(), DURATION);
+  screen._autoSkip=autoSkip;
+}
+
+function playIntroSound(){
+  try{
+    const ac=new (window.AudioContext||window.webkitAudioContext)();
+    const mk=(freq,type,gain,start,end,detune=0)=>{
+      const o=ac.createOscillator(),g=ac.createGain();
+      o.type=type; o.frequency.value=freq;
+      if(detune)o.detune.value=detune;
+      g.gain.setValueAtTime(0,ac.currentTime);
+      g.gain.linearRampToValueAtTime(gain,ac.currentTime+start);
+      g.gain.linearRampToValueAtTime(0,ac.currentTime+end);
+      o.connect(g);g.connect(ac.destination);
+      o.start();o.stop(ac.currentTime+end+0.1);
+    };
+    // deep ominous drone
+    mk(36,'sawtooth',0.045,1.4,5.5);
+    mk(38,'sawtooth',0.03,1.4,5.5,10);
+    mk(72,'sine',0.02,1.8,5.5);
+    mk(108,'sine',0.012,2.2,5.0);
+    // tension shimmer
+    mk(432,'sawtooth',0.006,2.5,5.2);
+    // impact thud
+    const buf=ac.createBuffer(1,Math.floor(ac.sampleRate*0.7),ac.sampleRate);
+    const d=buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2.5);
+    const ns=ac.createBufferSource(),nf=ac.createBiquadFilter(),ng=ac.createGain();
+    nf.type='lowpass';nf.frequency.value=100;
+    ng.gain.setValueAtTime(0.6,ac.currentTime);
+    ng.gain.linearRampToValueAtTime(0,ac.currentTime+0.7);
+    ns.buffer=buf;ns.connect(nf);nf.connect(ng);ng.connect(ac.destination);ns.start();
+  } catch(e){}
 }
 
 function skipIntro(){
-  document.getElementById('intro-vid').pause();
+  const screen=document.getElementById('intro-screen');
+  clearTimeout(screen._autoSkip);
+  const bar=document.getElementById('intro-bar');
+  bar.style.transition='none';
   finishIntro();
 }
 
 function finishIntro(){
   const screen=document.getElementById('intro-screen');
   screen.classList.add('fade-out');
-  // restore bg volume
-  vid.volume=0.35;
-  setTimeout(()=>{screen.style.display='none';showLoader();},800);
+  setTimeout(()=>{ screen.style.display='none'; showLoader(); },800);
 }
 
 /* ── STEP 3: IDENTITY REVEAL ── */
@@ -631,12 +737,13 @@ function showLoader(){
   spawnParticles();
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     loader.classList.add('fade-in');
-    setTimeout(revealNameChars, 200);
+    setTimeout(revealNameChars, 300);
+    setTimeout(()=>document.getElementById('rv-bar').classList.add('go'), 500);
   }));
 
   loadPresenceOnce()
-    .then(()=>setTimeout(goToMain,3200))
-    .catch(()=>setTimeout(goToMain,3200));
+    .then(()=>setTimeout(goToMain,3400))
+    .catch(()=>setTimeout(goToMain,3400));
 }
 
 /* ── STEP 4: MAIN BIO ── */
@@ -645,6 +752,14 @@ function goToMain(){
   loader.classList.add('fade-out');
   setTimeout(()=>{
     loader.style.display='none';
+    // NOW start bg video with sound
+    vid.muted=false;
+    vid.volume=0.35;
+    vid.play();
+    muted=false;
+    document.getElementById('icon-muted').style.display='none';
+    document.getElementById('icon-unmuted').style.display='block';
+    document.getElementById('sound-btn').classList.add('show');
     document.getElementById('main').classList.add('show');
     startWebSocket();
   },800);
