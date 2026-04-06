@@ -523,7 +523,7 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
 <!-- ── SCREEN 2: INTRO VIDEO ── -->
 <div id="intro-screen">
   <video id="intro-vid" playsinline style="width:100%;height:100%;object-fit:cover;display:block;">
-    <source src="i.mp4" type="video/mp4"/>
+    <source src="intro.mp4" type="video/mp4"/>
   </video>
   <div class="intro-bar-wrap"><div class="intro-bar" id="intro-bar"></div></div>
   <div class="intro-skip" onclick="skipIntro()">skip ›</div>
@@ -842,7 +842,14 @@ function enterSplash(){
   if(el.requestFullscreen)el.requestFullscreen();
   else if(el.webkitRequestFullscreen)el.webkitRequestFullscreen();
 
-  // just hide splash, go to intro — NO bg video yet
+  // UNLOCK AUDIO: start the intro video RIGHT NOW inside the click gesture
+  // (browsers only allow unmuted play if triggered synchronously from a user action)
+  const introVid=document.getElementById('intro-vid');
+  introVid.muted=false;
+  introVid.volume=1;
+  introVid.play().catch(()=>{});   // start immediately — browser grants permission here
+  introVid.pause();                 // pause right away, showIntro will resume it
+
   document.getElementById('splash').classList.add('out');
   setTimeout(showIntro,900);
 }
@@ -854,7 +861,8 @@ function showIntro(){
   screen.classList.add('show');
   requestAnimationFrame(()=>requestAnimationFrame(()=>screen.classList.add('fade-in')));
 
-  // play intro video with full sound
+  // audio was already unlocked in enterSplash — just resume
+  introVid.currentTime=0;
   introVid.muted=false;
   introVid.volume=1;
   introVid.play();
@@ -979,7 +987,14 @@ function startWebSocket(){
 /* ── VIEW COUNT ── */
 async function loadViews(){
   try{
-    const r=await fetch('https://api.counterapi.dev/v1/samplaysz-bio/views/up');
+    const alreadyCounted=localStorage.getItem('sam_visited');
+    let r;
+    if(alreadyCounted){
+      r=await fetch('https://api.counterapi.dev/v1/samplaysz-bio/views');
+    } else {
+      r=await fetch('https://api.counterapi.dev/v1/samplaysz-bio/views/up');
+      localStorage.setItem('sam_visited','1');
+    }
     const d=await r.json();
     document.getElementById('view-count').textContent=d.count?.toLocaleString()||'1';
   }catch(e){document.getElementById('view-count').textContent='1';}
