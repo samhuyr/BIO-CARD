@@ -177,77 +177,125 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
 #loader.fade-in{opacity:1;}
 #loader.fade-out{opacity:0;pointer-events:none;}
 
-/* background particles */
-.rv-particle{
-  position:absolute;border-radius:50%;
-  background:rgba(255,255,255,0.5);
-  animation:particleDrift linear infinite;
-  pointer-events:none;
+/* ═══════════════════════════════
+   SCREEN 3 — CINEMATIC LOADER
+═══════════════════════════════ */
+#loader{
+  position:fixed;inset:0;z-index:40;
+  background:#000;
+  display:none;opacity:0;
+  align-items:center;justify-content:center;
+  transition:opacity .8s ease;
+  overflow:hidden;
 }
-@keyframes particleDrift{
-  0%{transform:translateY(100vh) scale(0);opacity:0;}
-  10%{opacity:1;}
-  90%{opacity:.5;}
-  100%{transform:translateY(-20px) scale(1);opacity:0;}
+#loader.show{display:flex;}
+#loader.fade-in{opacity:1;}
+#loader.fade-out{opacity:0;pointer-events:none;}
+
+/* scanlines */
+#loader::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,0.02) 0px,rgba(255,255,255,0.02) 1px,transparent 1px,transparent 4px);
 }
 
 /* ambient glow */
-.rv-glow{
-  position:absolute;border-radius:50%;
-  filter:blur(120px);pointer-events:none;
-  animation:rvGlowPulse 6s ease-in-out infinite;
-}
-.rv-glow1{width:600px;height:600px;background:radial-gradient(circle,rgba(120,60,220,0.18),transparent);top:-100px;left:-150px;}
-.rv-glow2{width:500px;height:500px;background:radial-gradient(circle,rgba(40,80,200,0.14),transparent);bottom:-80px;right:-120px;animation-delay:-3s;}
-@keyframes rvGlowPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.rv-glow{position:absolute;border-radius:50%;filter:blur(130px);pointer-events:none;animation:rvGlowPulse 6s ease-in-out infinite;}
+.rv-glow1{width:500px;height:500px;background:radial-gradient(circle,rgba(100,50,200,0.2),transparent);top:-120px;left:-120px;}
+.rv-glow2{width:450px;height:450px;background:radial-gradient(circle,rgba(30,60,180,0.16),transparent);bottom:-100px;right:-100px;animation-delay:-3s;}
+@keyframes rvGlowPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 
-/* horizontal lines */
+/* HUD corner brackets */
+.hud-corner{position:absolute;width:50px;height:50px;pointer-events:none;}
+.hud-corner::before,.hud-corner::after{content:'';position:absolute;background:rgba(255,255,255,0.18);}
+.hud-corner::before{width:1px;height:100%;}
+.hud-corner::after{width:100%;height:1px;}
+.hud-tl{top:24px;left:24px;} .hud-tl::before{top:0;left:0;} .hud-tl::after{top:0;left:0;}
+.hud-tr{top:24px;right:24px;transform:scaleX(-1);}
+.hud-bl{bottom:24px;left:24px;transform:scaleY(-1);}
+.hud-br{bottom:24px;right:24px;transform:scale(-1,-1);}
+
+/* HUD text labels */
+.hud-label{
+  position:absolute;font-size:8px;font-weight:400;letter-spacing:3px;
+  color:rgba(255,255,255,0.18);text-transform:uppercase;pointer-events:none;
+}
+.hud-tl-txt{top:28px;left:82px;}
+.hud-tr-txt{top:28px;right:82px;text-align:right;}
+.hud-bl-txt{bottom:28px;left:82px;}
+.hud-br-txt{bottom:28px;right:82px;text-align:right;}
+
+/* horizontal scan line */
 .rv-line{
   position:absolute;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.04),rgba(255,255,255,0.08),rgba(255,255,255,0.04),transparent);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.06),rgba(255,255,255,0.1),rgba(255,255,255,0.06),transparent);
   animation:rvLineScan 3s ease-in-out infinite;
 }
 .rv-line1{top:28%;}
 .rv-line2{bottom:28%;animation-delay:-1.5s;}
-@keyframes rvLineScan{0%,100%{opacity:0;transform:scaleX(0.3)}50%{opacity:1;transform:scaleX(1)}}
+@keyframes rvLineScan{0%,100%{opacity:0;transform:scaleX(.3)}50%{opacity:1;transform:scaleX(1)}}
 
+/* floating particles */
+.rv-particle{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,0.6);
+  animation:particleDrift linear infinite;pointer-events:none;
+}
+@keyframes particleDrift{
+  0%{transform:translateY(100vh) scale(0);opacity:0;}
+  10%{opacity:1;}90%{opacity:.4;}
+  100%{transform:translateY(-20px) scale(1);opacity:0;}
+}
+
+/* center content */
 .rv-inner{
   display:flex;flex-direction:column;align-items:center;
-  position:relative;z-index:1;
-  text-align:center;padding:0 20px;
+  position:relative;z-index:1;text-align:center;padding:0 20px;
 }
+
+/* avatar in loader */
+.rv-av-wrap{
+  position:relative;width:86px;height:86px;margin-bottom:24px;
+  opacity:0;transform:scale(0.8) translateY(10px);
+  transition:opacity .8s ease .1s,transform .8s cubic-bezier(.34,1.4,.64,1) .1s;
+}
+#loader.fade-in .rv-av-wrap{opacity:1;transform:scale(1) translateY(0);}
+.rv-av-ring{
+  position:absolute;inset:-3px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(180,130,255,0.9),rgba(80,120,255,0.2),rgba(180,130,255,0.9));
+  animation:spinRing 2.5s linear infinite;
+}
+.rv-av-ring::after{content:'';position:absolute;inset:3px;border-radius:50%;background:#000;}
+@keyframes spinRing{to{transform:rotate(360deg)}}
+.rv-av-img{width:86px;height:86px;border-radius:50%;object-fit:cover;position:relative;z-index:1;display:block;}
+.rv-av-fb{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,#1a2a5a,#3a5aaa);display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#fff;position:relative;z-index:1;}
 
 /* eyebrow */
 .rv-eyebrow{
   font-size:8px;font-weight:300;letter-spacing:8px;
-  color:rgba(255,255,255,0.15);text-transform:uppercase;
-  margin-bottom:20px;
+  color:rgba(255,255,255,0.2);text-transform:uppercase;
+  margin-bottom:12px;
   opacity:0;transform:translateY(6px);
-  transition:opacity .7s ease,transform .7s ease;
+  transition:opacity .7s ease .3s,transform .7s ease .3s;
 }
 #loader.fade-in .rv-eyebrow{opacity:1;transform:translateY(0);}
 
-/* big name — char by char reveal */
+/* big name */
 .rv-name{
-  font-size:96px;font-weight:900;
-  letter-spacing:-4px;line-height:1;
-  margin-bottom:20px;
-  overflow:hidden;
-  background:linear-gradient(135deg,#fff 0%,rgba(210,190,255,0.85) 50%,#fff 100%);
+  font-size:88px;font-weight:900;letter-spacing:-4px;line-height:1;
+  margin-bottom:18px;overflow:hidden;
+  background:linear-gradient(135deg,#fff 0%,rgba(200,170,255,0.85) 50%,#fff 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .rv-name-char{
   display:inline-block;
-  opacity:0;transform:translateY(60px) rotateX(40deg);
-  transition:opacity .6s ease,transform .6s cubic-bezier(.34,1.3,.64,1);
+  opacity:0;transform:translateY(55px) rotateX(35deg);
+  transition:opacity .55s ease,transform .55s cubic-bezier(.34,1.3,.64,1);
 }
 
 /* divider */
 .rv-divider{
-  display:flex;align-items:center;gap:14px;
-  margin-bottom:18px;
-  opacity:0;transition:opacity .7s ease .6s;
-  width:280px;
+  display:flex;align-items:center;gap:14px;margin-bottom:14px;
+  opacity:0;transition:opacity .7s ease .65s;width:260px;
 }
 #loader.fade-in .rv-divider{opacity:1;}
 .rv-divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);}
@@ -255,69 +303,32 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
 
 /* tagline */
 .rv-tagline{
-  font-size:13px;font-weight:300;
-  color:rgba(255,255,255,0.35);
-  letter-spacing:3px;
-  margin-bottom:52px;
+  font-size:12px;font-weight:300;color:rgba(255,255,255,0.3);
+  letter-spacing:3px;margin-bottom:28px;
   opacity:0;transform:translateY(8px);
-  transition:opacity .7s ease .75s,transform .7s ease .75s;
-  font-style:italic;
+  transition:opacity .7s ease .8s,transform .7s ease .8s;font-style:italic;
 }
 #loader.fade-in .rv-tagline{opacity:1;transform:translateY(0);}
 
-/* continue hint */
-.rv-continue{
-  font-size:8px;font-weight:300;letter-spacing:5px;
-  color:rgba(255,255,255,0.15);text-transform:uppercase;
-  opacity:0;
-  animation:rvBreath 2s ease-in-out infinite;
-  transition:opacity .6s ease 1.4s;
-}
-#loader.fade-in .rv-continue{opacity:1;}
-@keyframes rvBreath{0%,100%{opacity:.1}50%{opacity:.4}}
-
-/* reveal avatar */
-.rv-av-wrap{
-  position:relative;width:80px;height:80px;
-  margin-bottom:22px;
-  opacity:0;transform:scale(0.85);
-  transition:opacity .7s ease .05s,transform .7s cubic-bezier(.34,1.4,.64,1) .05s;
-}
-#loader.fade-in .rv-av-wrap{opacity:1;transform:scale(1);}
-.rv-av-ring{
-  position:absolute;inset:-3px;border-radius:50%;
-  background:conic-gradient(from 0deg,rgba(160,120,255,0.8),rgba(80,120,255,0.3),rgba(160,120,255,0.8));
-  animation:spinRing 3s linear infinite;
-}
-.rv-av-ring::after{content:'';position:absolute;inset:3px;border-radius:50%;background:#000;}
-@keyframes spinRing{to{transform:rotate(360deg)}}
-.rv-av-img{
-  width:80px;height:80px;border-radius:50%;
-  object-fit:cover;position:relative;z-index:1;display:block;
-}
-.rv-av-fb{
-  width:80px;height:80px;border-radius:50%;
-  background:linear-gradient(135deg,#1a2a5a,#3a5aaa);
-  display:flex;align-items:center;justify-content:center;
-  font-size:30px;font-weight:700;color:#fff;
-  position:relative;z-index:1;
-}
-
-/* reveal progress bar */
+/* progress bar */
 .rv-bar-wrap{
-  width:140px;height:1px;
-  background:rgba(255,255,255,0.08);
-  border-radius:1px;overflow:hidden;
-  margin-bottom:16px;
-  opacity:0;transition:opacity .5s ease 1s;
+  width:160px;height:1.5px;background:rgba(255,255,255,0.07);
+  border-radius:2px;overflow:hidden;margin-bottom:14px;
+  opacity:0;transition:opacity .4s ease 1s;
 }
 #loader.fade-in .rv-bar-wrap{opacity:1;}
-.rv-bar{
-  height:100%;width:0%;
-  background:linear-gradient(90deg,rgba(160,120,255,0.6),rgba(255,255,255,0.9));
-  transition:width 2.4s cubic-bezier(.4,0,.2,1);
-}
+.rv-bar{height:100%;width:0%;background:linear-gradient(90deg,rgba(140,100,255,0.7),rgba(255,255,255,0.95));transition:width 2.4s cubic-bezier(.4,0,.2,1);}
 .rv-bar.go{width:100%;}
+
+/* status text */
+.rv-status-txt{
+  font-size:8px;font-weight:300;letter-spacing:4px;
+  color:rgba(255,255,255,0.18);text-transform:uppercase;
+  opacity:0;transition:opacity .4s ease 1.1s;
+  animation:rvBreath 2s ease-in-out infinite;
+}
+#loader.fade-in .rv-status-txt{opacity:1;}
+@keyframes rvBreath{0%,100%{opacity:.1}50%{opacity:.45}}
 
 /* ═══════════════════════════════
    SCREEN 4 — MAIN BIO
@@ -354,7 +365,40 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
   background:linear-gradient(135deg,#fff 0%,rgba(200,180,255,0.9) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.uhandle{font-size:12px;font-weight:300;color:rgba(255,255,255,0.3);letter-spacing:2px;margin-bottom:22px;}
+.uhandle{font-size:12px;font-weight:300;color:rgba(255,255,255,0.3);letter-spacing:2px;margin-bottom:14px;}
+
+/* ── DISCORD BADGES ── */
+.badges-row{
+  display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:6px;
+  margin-bottom:18px;
+  min-height:28px;
+}
+.badge-icon{
+  width:26px;height:26px;
+  border-radius:6px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  transition:transform .2s,border-color .2s;
+  cursor:default;
+}
+.badge-icon:hover{transform:translateY(-3px) scale(1.15);border-color:rgba(255,255,255,0.2);}
+.badge-icon img{width:18px;height:18px;object-fit:contain;}
+/* tooltip */
+.badge-icon::after{
+  content:attr(data-tip);
+  position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,0.85);color:rgba(255,255,255,0.85);
+  font-size:9px;font-weight:400;letter-spacing:.5px;
+  white-space:nowrap;padding:4px 8px;border-radius:6px;
+  border:1px solid rgba(255,255,255,0.08);
+  opacity:0;pointer-events:none;
+  transition:opacity .15s;
+  backdrop-filter:blur(8px);
+}
+.badge-icon:hover::after{opacity:1;}
 
 /* discord presence row */
 .dc-row{
@@ -382,6 +426,30 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
 .dc-uname{font-size:13px;font-weight:600;color:#fff;}
 .dc-badge{font-size:8px;font-weight:600;letter-spacing:1.5px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.35);text-transform:uppercase;}
 .dc-activity{font-size:11px;color:rgba(255,255,255,0.38);font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* game/app icon in presence */
+.dc-game-icon{
+  width:46px;height:46px;border-radius:10px;flex-shrink:0;
+  background:rgba(255,255,255,0.05);
+  display:none;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.dc-game-icon.show{display:flex;}
+.dc-game-icon img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
+
+/* platform tags row */
+.dc-tags{
+  display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;
+}
+.dc-tag{
+  display:flex;align-items:center;gap:4px;
+  padding:2px 7px;border-radius:5px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  font-size:9px;font-weight:500;letter-spacing:.5px;
+  color:rgba(255,255,255,0.5);
+}
+.dc-tag img{width:10px;height:10px;object-fit:contain;filter:brightness(2);}
 
 /* socials — soft pill style */
 .socials{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
@@ -459,12 +527,23 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
   <div class="intro-skip" onclick="skipIntro()">skip ›</div>
 </div>
 
-<!-- ── SCREEN 3: IDENTITY REVEAL ── -->
+<!-- ── SCREEN 3: CINEMATIC LOADER ── -->
 <div id="loader">
   <div class="rv-glow rv-glow1"></div>
   <div class="rv-glow rv-glow2"></div>
   <div class="rv-line rv-line1"></div>
   <div class="rv-line rv-line2"></div>
+
+  <!-- HUD corners -->
+  <div class="hud-corner hud-tl"></div>
+  <div class="hud-corner hud-tr"></div>
+  <div class="hud-corner hud-bl"></div>
+  <div class="hud-corner hud-br"></div>
+  <div class="hud-label hud-tl-txt">system</div>
+  <div class="hud-label hud-tr-txt">secure</div>
+  <div class="hud-label hud-bl-txt">v1.0.0</div>
+  <div class="hud-label hud-br-txt" id="hud-status">connecting</div>
+
   <div class="rv-inner">
     <div class="rv-av-wrap">
       <div class="rv-av-ring"></div>
@@ -482,7 +561,7 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
     </div>
     <div class="rv-tagline">don't search me up.</div>
     <div class="rv-bar-wrap"><div class="rv-bar" id="rv-bar"></div></div>
-    <div class="rv-continue">entering in a moment</div>
+    <div class="rv-status-txt" id="rv-status-txt">loading profile</div>
   </div>
 </div>
 
@@ -499,6 +578,9 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
   <div class="uname">Sam</div>
   <div class="uhandle">@samplaysz</div>
 
+  <!-- Discord badges -->
+  <div class="badges-row" id="badges-row"></div>
+
   <div class="dc-row gone" id="dc-row">
     <div class="dc-av-wrap">
       <img class="dc-av" id="dc-av" alt="" style="display:none"/>
@@ -511,7 +593,10 @@ html,body{width:100%;height:100%;font-family:'Outfit',sans-serif;overflow:hidden
         <span class="dc-badge" id="dc-badge">ONLINE</span>
       </div>
       <div class="dc-activity" id="dc-activity">Doing Nothing</div>
+      <!-- game tag / app icon row -->
+      <div class="dc-tags" id="dc-tags"></div>
     </div>
+    <div id="dc-game-icon" class="dc-game-icon"></div>
   </div>
 
   <div class="socials">
@@ -594,6 +679,59 @@ function setAvatarEverywhere(url){
   setFavicon(url);
 }
 
+/* ── DISCORD BADGES ── */
+const BADGE_MAP = {
+  'staff':                    {url:'https://cdn.discordapp.com/badge-icons/5e74e9b61934fc1f67c65515d1f7e60d.png', tip:'Discord Staff'},
+  'partner':                  {url:'https://cdn.discordapp.com/badge-icons/3f9748e53446a137a052f3454e2de41e.png', tip:'Partnered Server Owner'},
+  'hypesquad':                {url:'https://cdn.discordapp.com/badge-icons/bf01d1073931f921909045f3a39fd264.png', tip:'HypeSquad Events'},
+  'bug_hunter_level_1':       {url:'https://cdn.discordapp.com/badge-icons/2717692c7dca7289b35297368a940dd0.png', tip:'Bug Hunter'},
+  'bug_hunter_level_2':       {url:'https://cdn.discordapp.com/badge-icons/848f79194d4be5ff5f81505cbd0ce1e6.png', tip:'Bug Hunter (Gold)'},
+  'hypesquad_online_house_1': {url:'https://cdn.discordapp.com/badge-icons/8a88d63823d8a71cd5e390baa45efa02.png', tip:'HypeSquad Bravery'},
+  'hypesquad_online_house_2': {url:'https://cdn.discordapp.com/badge-icons/011940fd013082d99d0e8c8b38737f5d.png', tip:'HypeSquad Brilliance'},
+  'hypesquad_online_house_3': {url:'https://cdn.discordapp.com/badge-icons/3aa41de486fa12454c3761e8e223442e.png', tip:'HypeSquad Balance'},
+  'early_supporter':          {url:'https://cdn.discordapp.com/badge-icons/7060786766c9c840eb3019e725d2b358.png', tip:'Early Supporter'},
+  'verified_developer':       {url:'https://cdn.discordapp.com/badge-icons/6df5892e0f35b051f8b61eace34f4967.png', tip:'Early Verified Bot Developer'},
+  'active_developer':         {url:'https://cdn.discordapp.com/badge-icons/6bdc42827a38498929a4920da12695d9.png', tip:'Active Developer'},
+  'premium':                  {url:'https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png', tip:'Nitro'},
+  'nitro':                    {url:'https://cdn.discordapp.com/badge-icons/2ba85e8026a8614b640c2837bcdfe21b.png', tip:'Nitro'},
+  'guild_booster_lvl1':       {url:'https://cdn.discordapp.com/badge-icons/51040c70d4f20a921ad6674ff06a76b1.png', tip:'Server Boosting'},
+  'guild_booster_lvl6':       {url:'https://cdn.discordapp.com/badge-icons/df199d2050d3ed4ebf84d64ae83989f8.png', tip:'Server Boosting Lvl 6'},
+  'guild_booster_lvl9':       {url:'https://cdn.discordapp.com/badge-icons/8976122b3c1a2cd2d3bca5e677fe8a84.png', tip:'Server Boosting Lvl 9'},
+};
+
+function renderBadges(flags){
+  const row = document.getElementById('badges-row');
+  if(!flags){ row.style.display='none'; return; }
+  const flagBits = {
+    staff:1, partner:2, hypesquad:4, bug_hunter_level_1:8,
+    hypesquad_online_house_1:64, hypesquad_online_house_2:128,
+    hypesquad_online_house_3:256, early_supporter:512,
+    bug_hunter_level_2:16384, verified_developer:131072,
+    active_developer:4194304,
+  };
+  // also check string array form from Lanyard
+  const active=[];
+  if(typeof flags === 'number'){
+    for(const [key,bit] of Object.entries(flagBits)){
+      if(flags & bit) active.push(key);
+    }
+  } else if(Array.isArray(flags)){
+    active.push(...flags);
+  }
+  // check premium_type for nitro
+  row.innerHTML='';
+  active.forEach(key=>{
+    const b=BADGE_MAP[key];
+    if(!b)return;
+    const el=document.createElement('div');
+    el.className='badge-icon'; el.setAttribute('data-tip',b.tip);
+    const img=document.createElement('img');
+    img.src=b.url; img.alt=b.tip;
+    el.appendChild(img); row.appendChild(el);
+  });
+  if(active.length===0) row.style.display='none';
+}
+
 function applyPresence(data){
   if(!data)return;
   if(data.discord_user?.avatar){
@@ -607,6 +745,22 @@ function applyPresence(data){
   setStatus(data.discord_status||'offline');
   const uname=data.discord_user?.global_name||data.discord_user?.username||'samplaysz';
   document.getElementById('dc-uname').textContent=uname;
+
+  // badges — Lanyard returns public_flags on discord_user
+  const flags = data.discord_user?.public_flags ?? data.discord_user?.flags ?? null;
+  renderBadges(flags);
+  // also handle nitro via premium_type
+  if(data.discord_user?.premium_type && data.discord_user.premium_type > 0){
+    const row=document.getElementById('badges-row');
+    const b=BADGE_MAP['nitro'];
+    if(b && !row.querySelector('[data-tip="Nitro"]')){
+      const el=document.createElement('div');
+      el.className='badge-icon';el.setAttribute('data-tip',b.tip);
+      const img=document.createElement('img');img.src=b.url;img.alt=b.tip;
+      el.appendChild(img);row.appendChild(el);
+    }
+  }
+
   updateActivity(data);
 }
 
@@ -615,10 +769,52 @@ function updateActivity(data){
   const act=acts.find(a=>a.type===0)||acts.find(a=>a.type===2)||acts[0];
   const row=document.getElementById('dc-row');
   const tmap={0:'Playing',1:'Streaming',2:'Listening to',3:'Watching',5:'Competing in'};
+  const iconEl=document.getElementById('dc-game-icon');
+  const tagsEl=document.getElementById('dc-tags');
+
+  iconEl.classList.remove('show'); iconEl.innerHTML='';
+  tagsEl.innerHTML='';
+
   if(act){
     row.classList.remove('gone');
     setTimeout(()=>row.classList.add('visible'),300);
     document.getElementById('dc-activity').textContent=`${tmap[act.type]||'Playing'} ${act.name||''}`;
+
+    // game/app icon
+    if(act.application_id && act.assets?.large_image){
+      const img=document.createElement('img');
+      img.src=`https://cdn.discordapp.com/app-assets/${act.application_id}/${act.assets.large_image}.webp?size=64`;
+      img.onerror=()=>{ iconEl.classList.remove('show'); };
+      iconEl.appendChild(img); iconEl.classList.add('show');
+    }
+
+    // platform tag (e.g. Xbox, PlayStation, Steam)
+    if(act.platform){
+      const PLAT={
+        'xbox':    {color:'#107c10',label:'Xbox'},
+        'ps4':     {color:'#003791',label:'PlayStation'},
+        'ps5':     {color:'#003791',label:'PlayStation'},
+        'samsung': {color:'#1428a0',label:'Samsung'},
+        'ios':     {color:'#555',label:'iOS'},
+        'android': {color:'#3ddc84',label:'Android'},
+        'desktop': {color:'#5865f2',label:'Desktop'},
+        'web':     {color:'#5865f2',label:'Web'},
+      };
+      const p=PLAT[act.platform.toLowerCase()]||{color:'#555',label:act.platform};
+      const tag=document.createElement('div');
+      tag.className='dc-tag';
+      tag.innerHTML=`<span style="width:6px;height:6px;border-radius:50%;background:${p.color};display:inline-block;"></span>${p.label}`;
+      tagsEl.appendChild(tag);
+    }
+
+    // state tag (e.g. "In a Party · 2 of 4")
+    if(act.state && act.type===0){
+      const tag=document.createElement('div');
+      tag.className='dc-tag';
+      tag.textContent=act.state;
+      tagsEl.appendChild(tag);
+    }
+
   } else if(data.discord_status&&data.discord_status!=='offline'){
     row.classList.remove('gone');
     setTimeout(()=>row.classList.add('visible'),300);
@@ -737,13 +933,31 @@ function showLoader(){
   spawnParticles();
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     loader.classList.add('fade-in');
-    setTimeout(revealNameChars, 300);
-    setTimeout(()=>document.getElementById('rv-bar').classList.add('go'), 500);
+    setTimeout(revealNameChars, 400);
+    setTimeout(()=>document.getElementById('rv-bar').classList.add('go'), 600);
   }));
 
+  // cycle HUD status text
+  const statuses=['connecting...','fetching profile...','loading presence...','syncing discord...','almost there...'];
+  let si=0;
+  const hudTxt=document.getElementById('hud-status');
+  const rvTxt=document.getElementById('rv-status-txt');
+  const cycleStatus=()=>{
+    hudTxt.textContent=statuses[si];
+    rvTxt.textContent=statuses[si];
+    si=(si+1)%statuses.length;
+  };
+  cycleStatus();
+  const statusInt=setInterval(cycleStatus,700);
+
   loadPresenceOnce()
-    .then(()=>setTimeout(goToMain,3400))
-    .catch(()=>setTimeout(goToMain,3400));
+    .then(()=>{
+      clearInterval(statusInt);
+      hudTxt.textContent='online';
+      rvTxt.textContent='profile loaded ✦';
+      setTimeout(goToMain,600);
+    })
+    .catch(()=>{ clearInterval(statusInt); setTimeout(goToMain,3400); });
 }
 
 /* ── STEP 4: MAIN BIO ── */
